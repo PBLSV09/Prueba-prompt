@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia de Conocimientos Generales</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .question {
+            font-size: 1.2em;
+            margin: 20px 0;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #e0e0e0;
+        }
+        .correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+        }
+        #nextBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+        #nextBtn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #result {
+            display: none;
+            margin-top: 20px;
+        }
+        .feedback {
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="animate__animated animate__bounceIn">Trivia de Conocimientos Generales</h1>
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <button id="nextBtn">Siguiente</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "¿Cuál es la capital de Francia?",
+                options: ["Madrid", "París", "Roma", "Berlín"],
+                correct: 1
+            },
+            {
+                question: "¿En qué año llegó Cristóbal Colón a América?",
+                options: ["1492", "1453", "1519", "1607"],
+                correct: 0
+            },
+            {
+                question: "¿Cuál es el planeta más grande del sistema solar?",
+                options: ["Marte", "Júpiter", "Tierra", "Saturno"],
+                correct: 1
+            },
+            {
+                question: "¿Quién escribió 'Don Quijote de la Mancha'?",
+                options: ["Gabriel García Márquez", "William Shakespeare", "Miguel de Cervantes", "Jorge Luis Borges"],
+                correct: 2
+            },
+            {
+                question: "¿Cuál es el elemento químico con símbolo O?",
+                options: ["Oro", "Oxígeno", "Osmio", "Óxido"],
+                correct: 1
+            },
+            {
+                question: "¿En qué continente está Egipto?",
+                options: ["Asia", "África", "Europa", "Oceanía"],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es el océano más grande del mundo?",
+                options: ["Atlántico", "Índico", "Pacífico", "Ártico"],
+                correct: 2
+            },
+            {
+                question: "¿Quién pintó la Mona Lisa?",
+                options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"],
+                correct: 2
+            },
+            {
+                question: "¿Cuál es el resultado de 6 x 7?",
+                options: ["36", "42", "48", "54"],
+                correct: 1
+            },
+            {
+                question: "¿Qué gas starry night es una pintura famosa de qué artista?",
+                options: ["Claude Monet", "Vincent van Gogh", "Pablo Picasso", "Edvard Munch"],
+                correct: 1
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedOption = null;
+
+        const questionEl = document.getElementById('question');
+        const optionsEl = document.getElementById('options');
+        const nextBtn = document.getElementById('nextBtn');
+        const resultEl = document.getElementById('result');
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            questionEl.textContent = q.question;
+            optionsEl.innerHTML = '';
+            q.options.forEach((option, index) => {
+                const div = document.createElement('div');
+                div.className = 'option animate__animated animate__fadeIn';
+                div.textContent = option;
+                div.addEventListener('click', () => selectOption(index));
+                optionsEl.appendChild(div);
+            });
+            nextBtn.style.display = 'none';
+            selectedOption = null;
+        }
+
+        function selectOption(index) {
+            if (selectedOption !== null) return;
+            selectedOption = index;
+            const opts = optionsEl.children;
+            for (let i = 0; i < opts.length; i++) {
+                opts[i].style.pointerEvents = 'none';
+                if (i === questions[currentQuestion].correct) {
+                    opts[i].classList.add('correct');
+                } else if (i === index && index !== questions[currentQuestion].correct) {
+                    opts[i].classList.add('incorrect');
+                }
+            }
+            if (index === questions[currentQuestion].correct) {
+                score++;
+            }
+            nextBtn.style.display = 'block';
+            nextBtn.classList.add('animate__animated', 'animate__pulse');
+        }
+
+        function showResult() {
+            questionEl.style.display = 'none';
+            optionsEl.style.display = 'none';
+            nextBtn.style.display = 'none';
+            resultEl.style.display = 'block';
+            resultEl.classList.add('animate__animated', 'animate__fadeIn');
+            let feedback = '';
+            if (score >= 8) {
+                feedback = '¡Excelente! Tienes un gran conocimiento general.';
+            } else if (score >= 5) {
+                feedback = '¡Buen trabajo! Puedes mejorar con un poco más de estudio.';
+            } else {
+                feedback = '¡No te desanimes! Sigue aprendiendo y lo harás mejor.';
+            }
+            resultEl.innerHTML = `
+                <h2>Tu puntaje: ${score}/10</h2>
+                <p class="feedback">${feedback}</p>
+            `;
+        }
+
+        nextBtn.addEventListener('click', () => {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        });
+
+        loadQuestion();
+    </script>
+</body>
+</html>
